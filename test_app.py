@@ -32,7 +32,7 @@ class CastingApiTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
-        # self.assertTrue(data['actors'])
+        self.assertTrue(data['actors'])
 
     # def test_get_movies_success(self):
     #     response = self.client().get('/movies')

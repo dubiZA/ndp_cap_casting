@@ -27,6 +27,13 @@ class Movie(db.Model):
         self.title = title
         self.release_date = release_date
 
+    def format(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'release_date': self.release_date
+        }
+
     def insert(self):
         db.session.add(self)
         db.session.commit()
@@ -51,6 +58,14 @@ class Actor(db.Model):
         self.name = name
         self.age = age
         self.gender = gender
+
+    def format(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'age': self.age,
+            'gender': self.gender
+        }
 
     def insert(self):
         db.session.add(self)

@@ -12,9 +12,31 @@ def create_app(test_config=None):
 
     @app.route('/actors')
     def get_actors():
+        actors = Actor.query.all()
+
+        if not actors:
+            abort(404)
         
+        actors = [actor.format() for actor in actors]
+        print(actors)
+
         return jsonify({
-            'success': True
+            'success': True,
+            'actors': actors
+        })
+
+    @app.route('/movies')
+    def get_movies():
+        movies = Movie.query.all()
+
+        if not movies:
+            abort(404)
+        
+        movies = [movie.format() for movie in movies]
+
+        return jsonify({
+            'success': True,
+            'movies': movies
         })
 
 
