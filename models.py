@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, create_engine
+from sqlalchemy import Column, String, Integer, DateTime, create_engine
 from flask_sqlalchemy import SQLAlchemy
 import json
 import os
@@ -21,7 +21,7 @@ class Movie(db.Model):
 
     id = Column(Integer, primary_key=True)
     title = Column(String)
-    release_date = Column(String) #TODO: Make datetime
+    release_date = Column(DateTime) #TODO: Make datetime
 
     def __init__(self, title, release_date):
         self.title = title
