@@ -18,7 +18,6 @@ def create_app(test_config=None):
             abort(404)
         
         actors = [actor.format() for actor in actors]
-        print(actors)
 
         return jsonify({
             'success': True,
@@ -39,7 +38,15 @@ def create_app(test_config=None):
             'movies': movies
         })
 
+    @app.route('/actors/<int:id>', methods=['DELETE'])
+    def delete_actor(id):
 
+        return jsonify({
+            'success': True,
+            'deleted': 1
+        })
+
+    # Error handling
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({

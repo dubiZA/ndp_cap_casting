@@ -42,6 +42,14 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['movies'])
 
+    def test_delete_actor_success(self):
+        response = self.client().delete('/actors/1')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['deleted'], 1)
+
 
 if __name__ == "__main__":
     unittest.main()
