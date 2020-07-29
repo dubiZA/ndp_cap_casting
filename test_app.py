@@ -43,12 +43,38 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertTrue(data['movies'])
 
     def test_delete_actor_success(self):
-        response = self.client().delete('/actors/1')
+        actor_id = 4
+        response = self.client().delete(f'/actors/{actor_id}')
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(data['deleted'], 1)
+        self.assertEqual(data['delete'], actor_id)
+
+    def test_delete_actor_not_found(self):
+        actor_id = 2000
+        response = self.client().delete(f'/actors/{actor_id}')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+
+    def test_delete_movie_success(self):
+        movie_id = 2
+        response = self.client().delete(f'/movies/{movie_id}')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['delete'], movie_id)
+
+    def test_delete_movie_not_found(self):
+        movie_id = 20000
+        response = self.client().delete(f'/movies/{movie_id}')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
 
 
 if __name__ == "__main__":

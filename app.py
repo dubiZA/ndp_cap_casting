@@ -40,11 +40,37 @@ def create_app(test_config=None):
 
     @app.route('/actors/<int:id>', methods=['DELETE'])
     def delete_actor(id):
+        actor = Actor.query.get(id)
 
-        return jsonify({
-            'success': True,
-            'deleted': 1
-        })
+        if not actor:
+            abort(404)
+        
+        try:
+            actor.delete()
+
+            return jsonify({
+                'success': True,
+                'delete': id
+            })
+        except:
+            abort(422)
+
+    @app.route('/movies/<int:id>', methods=['DELETE'])
+    def delete_movie(id):
+        movie = Movie.query.get(id)
+
+        if not movie:
+            abort(404)
+        
+        try:
+            movie.delete()
+
+            return jsonify({
+                'success': True,
+                'delete': id
+            })
+        except:
+            abort(422)
 
     # Error handling
     @app.errorhandler(400)
