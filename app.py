@@ -5,7 +5,7 @@ from flask_cors import CORS
 from models import setup_db, Movie, Actor
 
 def create_app(test_config=None):
-    # create and configure the app
+    # Create and configure the app
     app = Flask(__name__)
     CORS(app)
     setup_db(app)
@@ -71,6 +71,36 @@ def create_app(test_config=None):
             })
         except:
             abort(422)
+
+    @app.route('/actors', methods=['POST'])
+    def post_actor():
+        actor_details = request.get_json()
+        
+        if 'name' or 'age' or 'gender' not in actor_details:
+            abort(404)
+
+        actor_name = actor_details['name']
+        actor_age = actor_details['age']
+        actor_gender = actor_details['gender']
+
+        try:
+            new_actor = Actor(
+                name=actor_name,
+                age=actor_age,
+                gender=actor_gender
+            )
+            new_actor.insert()
+
+            all_actors = Actor.query.all()
+            all_actors = [actor.format() for actor in all_actors]
+        except:
+            abort(422)
+        
+        return jsonify({
+            'success': True,
+            'actors': all_actors
+        })
+
 
     # Error handling
     @app.errorhandler(400)
