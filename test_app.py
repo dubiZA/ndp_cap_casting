@@ -26,57 +26,72 @@ class CastingApiTestCase(unittest.TestCase):
         '''Executes after each test'''
         pass
 
-    def test_get_actors_success(self):
-        response = self.client().get('/actors')
-        data = json.loads(response.data)
+    # def test_get_actors_success(self):
+    #     response = self.client().get('/actors')
+    #     data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['success'], True)
-        self.assertTrue(data['actors'])
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(data['success'], True)
+    #     self.assertTrue(data['actors'])
 
-    def test_get_movies_success(self):
-        response = self.client().get('/movies')
-        data = json.loads(response.data)
+    # def test_get_movies_success(self):
+    #     response = self.client().get('/movies')
+    #     data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['success'], True)
-        self.assertTrue(data['movies'])
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(data['success'], True)
+    #     self.assertTrue(data['movies'])
 
-    def test_delete_actor_success(self):
-        actor_id = 4
-        response = self.client().delete(f'/actors/{actor_id}')
-        data = json.loads(response.data)
+    # def test_delete_actor_success(self):
+    #     actor_id = 4
+    #     response = self.client().delete(f'/actors/{actor_id}')
+    #     data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['success'], True)
-        self.assertEqual(data['delete'], actor_id)
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(data['success'], True)
+    #     self.assertEqual(data['delete'], actor_id)
 
-    def test_delete_actor_not_found(self):
-        actor_id = 2000
-        response = self.client().delete(f'/actors/{actor_id}')
-        data = json.loads(response.data)
+    # def test_delete_actor_not_found(self):
+    #     actor_id = 2000
+    #     response = self.client().delete(f'/actors/{actor_id}')
+    #     data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(data['success'], False)
+    #     self.assertEqual(response.status_code, 404)
+    #     self.assertEqual(data['success'], False)
 
-    def test_delete_movie_success(self):
-        movie_id = 2
-        response = self.client().delete(f'/movies/{movie_id}')
-        data = json.loads(response.data)
+    # def test_delete_movie_success(self):
+    #     movie_id = 2
+    #     response = self.client().delete(f'/movies/{movie_id}')
+    #     data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['success'], True)
-        self.assertEqual(data['delete'], movie_id)
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(data['success'], True)
+    #     self.assertEqual(data['delete'], movie_id)
 
-    def test_delete_movie_not_found(self):
-        movie_id = 20000
-        response = self.client().delete(f'/movies/{movie_id}')
-        data = json.loads(response.data)
+    # def test_delete_movie_not_found(self):
+    #     movie_id = 20000
+    #     response = self.client().delete(f'/movies/{movie_id}')
+    #     data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(data['success'], False)
+    #     self.assertEqual(response.status_code, 404)
+    #     self.assertEqual(data['success'], False)
 
     #TODO Add tests for POST actors
+    def test_add_actor_success(self):
+        payload = {
+            'name': 'Test',
+            'age': 43,
+            'gender': 'f'
+        }
+
+        response = self.client().post('/actors', json=payload)
+        data = json.loads(response.data)
+
+        actor = Actor.query.filter(Actor.name.ilike('%Test%')).one_or_none()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(payload['name'], actor.name)
 
     #TODO Add tests for POST movies
 

@@ -76,7 +76,7 @@ def create_app(test_config=None):
     def post_actor():
         actor_details = request.get_json()
         
-        if 'name' or 'age' or 'gender' not in actor_details:
+        if 'name' not in actor_details or 'age' not in actor_details or 'gender' not in actor_details:
             abort(404)
 
         actor_name = actor_details['name']
