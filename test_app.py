@@ -76,6 +76,18 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
 
+    #TODO Add tests for POST actors
+
+    #TODO Add tests for POST movies
+
+    #TODO Add tests for PATCH actors
+
+    #TODO Add tests for PATCH movies
+
+    #TODO Add fail tests for all endpoints
+
+    #TODO Add auth tests
+
 
 if __name__ == "__main__":
     unittest.main()

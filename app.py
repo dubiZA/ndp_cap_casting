@@ -101,6 +101,12 @@ def create_app(test_config=None):
             'actors': all_actors
         })
 
+    #TODO Add POST movies endpoint
+
+    #TODO Add PATCH endpoints for actors and movies
+
+    #TODO Add auth functionality
+
 
     # Error handling
     @app.errorhandler(400)
