@@ -4,6 +4,22 @@ from flask_cors import CORS
 
 from models import setup_db, Movie, Actor
 
+ITEMS_PER_PAGE = 5
+
+def paginate(request, selection):
+    page = request.args.get('page', 1, type=int)
+    start = (page - 1) * ITEMS_PER_PAGE
+    end = start + ITEMS_PER_PAGE
+
+    all_items = [item.format() for item in selection]
+    current_items = all_items[start:end]
+
+    return {
+        'current_page': page,
+        'total_items': len(all_items),
+        'current_items': current_items
+    }
+
 def create_app(test_config=None):
     # Create and configure the app
     app = Flask(__name__)
@@ -12,30 +28,40 @@ def create_app(test_config=None):
 
     @app.route('/actors')
     def get_actors():
-        actors = Actor.query.all()
-
-        if not actors:
-            abort(404)
+        try:
+            actors = Actor.query.order_by(Actor.id).all()
+        except:
+            abort(422)
         
-        actors = [actor.format() for actor in actors]
+        current_actors = paginate(request, actors)
+
+        if len(current_actors['current_items']) == 0:
+            abort(404)
 
         return jsonify({
             'success': True,
-            'actors': actors
+            'actors': current_actors['current_items'],
+            'total_actors': current_actors['total_items'],
+            'current_page': current_actors['current_page']
         })
 
     @app.route('/movies')
     def get_movies():
-        movies = Movie.query.all()
-
-        if not movies:
+        try:
+            movies = Movie.query.order_by(Movie.id).all()
+        except:
             abort(404)
-        
-        movies = [movie.format() for movie in movies]
+
+        current_movies = paginate(request, movies)
+
+        if len(current_movies['current_items']) == 0:
+            abort(404)
 
         return jsonify({
             'success': True,
-            'movies': movies
+            'movies': current_movies['current_items'],
+            'total_movies': current_movies['total_items'],
+            'current_page': current_movies['current_page']
         })
 
     @app.route('/actors/<int:id>', methods=['DELETE'])
@@ -129,7 +155,6 @@ def create_app(test_config=None):
             'movies': all_movies
         })
 
-    #TODO Add PATCH endpoints for actors and movies
     @app.route('/actors/<int:id>', methods=['PATCH'])
     def patch_actor(id):
         edit_actor = Actor.query.get(id)
