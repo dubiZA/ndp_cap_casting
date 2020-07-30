@@ -102,8 +102,65 @@ def create_app(test_config=None):
         })
 
     #TODO Add POST movies endpoint
+    @app.route('/movies', methods=['POST'])
+    def post_movie():
+        movie_details = request.get_json()
+        
+        if 'title' not in movie_details or 'release_date' not in movie_details:
+            abort(404)
+
+        movie_title = movie_details['title']
+        movie_release_date = movie_details['release_date']
+
+        try:
+            new_movie = Movie(
+                title=movie_title,
+                release_date=movie_release_date
+            )
+            new_movie.insert()
+
+            all_movies = Movie.query.all()
+            all_movies = [movie.format() for movie in all_movies]
+        except:
+            abort(422)
+        
+        return jsonify({
+            'success': True,
+            'movies': all_movies
+        })
 
     #TODO Add PATCH endpoints for actors and movies
+    @app.route('/actors/<int:id>', methods=['PATCH'])
+    def patch_actor(id):
+        edit_actor = Actor.query.get(id)
+        if not edit_actor:
+            abort(404)
+
+        actor_update = request.get_json()
+        if 'name' in actor_update:
+            actor_name = actor_update['name']
+            edit_actor.name = actor_name
+        if 'age' in actor_update:
+            actor_age = actor_update['age']
+            edit_actor.age = actor_age
+        if 'gender' in actor_update:
+            actor_gender = actor_update['gender']
+            edit_actor.gender = actor_gender
+        
+        if not actor_name and not actor_age and not actor_gender:
+            abort(422)
+
+        try:
+            edit_actor.update()
+            actor = Actor.query.get(id)
+            actor = actor.format()
+
+            return jsonify({
+                'success': True,
+                'actors': actor
+            })
+        except:
+            abort(422)
 
     #TODO Add auth functionality
 

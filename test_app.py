@@ -76,28 +76,67 @@ class CastingApiTestCase(unittest.TestCase):
     #     self.assertEqual(response.status_code, 404)
     #     self.assertEqual(data['success'], False)
 
-    #TODO Add tests for POST actors
-    def test_add_actor_success(self):
+    # def test_add_actor_success(self):
+    #     payload = {
+    #         'name': 'Test',
+    #         'age': 43,
+    #         'gender': 'f'
+    #     }
+
+    #     response = self.client().post('/actors', json=payload)
+    #     data = json.loads(response.data)
+
+    #     actor = Actor.query.filter(Actor.name.ilike('%Test%')).one_or_none()
+
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(data['success'], True)
+    #     self.assertEqual(payload['name'], actor.name)
+
+    # def test_add_movie_success(self):
+    #     payload = {
+    #         'title': 'Test',
+    #         'release_date': '2012-02-13'
+    #     }
+
+    #     response = self.client().post('/movies', json=payload)
+    #     data = json.loads(response.data)
+
+    #     movie = Movie.query.filter(Movie.title.ilike('%Test%')).one_or_none()
+
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(data['success'], True)
+    #     self.assertEqual(payload['title'], movie.title)
+
+    # def test_edit_actor_success(self):
+    #     payload = {
+    #         'name': 'Test_Dubz'
+    #     }
+
+    #     actor_id = 5
+    #     response = self.client().patch(f'/actors/{actor_id}', json=payload)
+    #     data = json.loads(response.data)
+
+    #     actor = Actor.query.get(actor_id)
+
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(data['success'], True)
+    #     self.assertEqual(payload['name'], actor.name)
+
+    #TODO Add tests for PATCH movies
+    def test_edit_movie_success(self):
         payload = {
-            'name': 'Test',
-            'age': 43,
-            'gender': 'f'
+            'title': 'Test_Moovz'
         }
 
-        response = self.client().post('/actors', json=payload)
+        movie_id = 5
+        response = self.client().patch(f'/movies/{movie_id}', json=payload)
         data = json.loads(response.data)
 
-        actor = Actor.query.filter(Actor.name.ilike('%Test%')).one_or_none()
+        movie = Movie.query.get(movie_id)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(payload['name'], actor.name)
-
-    #TODO Add tests for POST movies
-
-    #TODO Add tests for PATCH actors
-
-    #TODO Add tests for PATCH movies
+        self.assertEqual(payload['name'], movie.name)
 
     #TODO Add fail tests for all endpoints
 
