@@ -162,6 +162,35 @@ def create_app(test_config=None):
         except:
             abort(422)
 
+    @app.route('/movies/<int:id>', methods=['PATCH'])
+    def patch_movie(id):
+        edit_movie = Movie.query.get(id)
+        if not edit_movie:
+            abort(404)
+
+        movie_update = request.get_json()
+        if 'title' in movie_update:
+            movie_title = movie_update['title']
+            edit_movie.title = movie_title
+        if 'release_date' in movie_update:
+            movie_release_date = movie_update['release_date']
+            edit_movie.release_date = movie_release_date
+        
+        if not movie_title and not movie_release_date:
+            abort(422)
+
+        try:
+            edit_movie.update()
+            movie = Movie.query.get(id)
+            movie = movie.format()
+
+            return jsonify({
+                'success': True,
+                'movies': movie
+            })
+        except:
+            abort(422)
+
     #TODO Add auth functionality
 
 

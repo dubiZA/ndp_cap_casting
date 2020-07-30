@@ -136,7 +136,7 @@ class CastingApiTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(payload['name'], movie.name)
+        self.assertEqual(payload['title'], movie.title)
 
     #TODO Add fail tests for all endpoints
 
