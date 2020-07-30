@@ -34,6 +34,13 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['actors'])
 
+    def test_get_actors_not_found(self):
+        response = self.client().get('/actors?page=100000')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+
     def test_get_movies_success(self):
         response = self.client().get('/movies')
         data = json.loads(response.data)
@@ -42,8 +49,15 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['movies'])
 
+    def test_get_movies_not_found(self):
+        response = self.client().get('/movies?page=100000')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+
     def test_delete_actor_success(self):
-        actor_id = 4
+        actor_id = 6
         response = self.client().delete(f'/actors/{actor_id}')
         data = json.loads(response.data)
 
@@ -60,7 +74,7 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
 
     def test_delete_movie_success(self):
-        movie_id = 2
+        movie_id = 6
         response = self.client().delete(f'/movies/{movie_id}')
         data = json.loads(response.data)
 
@@ -112,7 +126,7 @@ class CastingApiTestCase(unittest.TestCase):
             'name': 'Test_Dubz'
         }
 
-        actor_id = 5
+        actor_id = 10
         response = self.client().patch(f'/actors/{actor_id}', json=payload)
         data = json.loads(response.data)
 
@@ -128,7 +142,7 @@ class CastingApiTestCase(unittest.TestCase):
             'title': 'Test_Moovz'
         }
 
-        movie_id = 5
+        movie_id = 10
         response = self.client().patch(f'/movies/{movie_id}', json=payload)
         data = json.loads(response.data)
 
