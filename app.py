@@ -3,6 +3,7 @@ from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
 
 from models import setup_db, Movie, Actor
+from auth import AuthError, requires_auth
 
 ITEMS_PER_PAGE = 5
 
