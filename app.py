@@ -29,7 +29,7 @@ def create_app(test_config=None):
 
     @app.route('/actors')
     @requires_auth(permission='get:actors')
-    def get_actors():
+    def get_actors(jwt):
         '''Handles GET requests for actors.
 
         Accepts a request for actors and retrieves all actors
@@ -61,7 +61,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/movies')
-    def get_movies():
+    @requires_auth(permission='get:movies')
+    def get_movies(jwt):
         '''Handles GET requests for movies.
 
         Accepts a request for movies and retrieves all movies
@@ -93,7 +94,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/actors/<int:id>', methods=['DELETE'])
-    def delete_actor(id):
+    @requires_auth(permission='delete:actors')
+    def delete_actor(jwt, id):
         '''Handles DELETE requests for actors.
 
         Accepts a delete request for a specified actor
@@ -123,7 +125,8 @@ def create_app(test_config=None):
             abort(422)
 
     @app.route('/movies/<int:id>', methods=['DELETE'])
-    def delete_movie(id):
+    @requires_auth(permission='delete:movies')
+    def delete_movie(jwt, id):
         '''Handles DELETE requests for movies.
 
         Accepts a delete request for a specified movie
@@ -153,7 +156,8 @@ def create_app(test_config=None):
             abort(422)
 
     @app.route('/actors', methods=['POST'])
-    def post_actor():
+    @requires_auth(permission='post:actors')
+    def post_actor(jwt):
         '''Handles POST requests for actors.
 
         Accepts a POST request for actors and adds the new
@@ -194,7 +198,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/movies', methods=['POST'])
-    def post_movie():
+    @requires_auth(permission='post:movies')
+    def post_movie(jwt):
         '''Handles POST requests for movies.
 
         Accepts a POST request for movies and adds the new
@@ -233,7 +238,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/actors/<int:id>', methods=['PATCH'])
-    def patch_actor(id):
+    @requires_auth(permission='patch:actors')
+    def patch_actor(jwt, id):
         '''Handles PATCH requests for actors.
 
         Accepts a PATCH request for a specified actor
@@ -279,7 +285,8 @@ def create_app(test_config=None):
             abort(422)
 
     @app.route('/movies/<int:id>', methods=['PATCH'])
-    def patch_movie(id):
+    @requires_auth(permission='patch:movies')
+    def patch_movie(jwt, id):
         '''Handles PATCH requests for movies.
 
         Accepts a PATCH request for a specified movie
@@ -319,8 +326,6 @@ def create_app(test_config=None):
             })
         except:
             abort(422)
-
-    #TODO Add auth functionality
 
 
     # Error handling
