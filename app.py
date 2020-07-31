@@ -28,6 +28,19 @@ def create_app(test_config=None):
 
     @app.route('/actors')
     def get_actors():
+        '''Handles GET requests for actors.
+
+        Accepts a request for actors and retrieves all actors
+        from the database.
+
+        Returns:
+            A JSON response reporting success, a list of actors as 
+            JSON objects, total number of actors and current page.
+
+        Raises:
+            404 if there are no actors to return.
+            422 if the request cannot be processed
+        '''
         try:
             actors = Actor.query.order_by(Actor.id).all()
         except:
@@ -47,6 +60,19 @@ def create_app(test_config=None):
 
     @app.route('/movies')
     def get_movies():
+        '''Handles GET requests for movies.
+
+        Accepts a request for movies and retrieves all movies
+        from the database.
+
+        Returns:
+            A JSON response reporting success, a list of movies as 
+            JSON objects, total number of movies and current page.
+
+        Raises:
+            404 if there are no movies to return.
+            422 if the request cannot be processed
+        '''
         try:
             movies = Movie.query.order_by(Movie.id).all()
         except:
@@ -66,6 +92,19 @@ def create_app(test_config=None):
 
     @app.route('/actors/<int:id>', methods=['DELETE'])
     def delete_actor(id):
+        '''Handles DELETE requests for actors.
+
+        Accepts a delete request for a specified actor
+        and deletes it from the database.
+
+        Returns:
+            A JSON response reporting success and the
+            ID of the deleted actor.
+
+        Raises:
+            404 if the specified actor does not exist.
+            422 if the request cannot be processed
+        '''
         actor = Actor.query.get(id)
 
         if not actor:
@@ -83,6 +122,19 @@ def create_app(test_config=None):
 
     @app.route('/movies/<int:id>', methods=['DELETE'])
     def delete_movie(id):
+        '''Handles DELETE requests for movies.
+
+        Accepts a delete request for a specified movie
+        and deletes it from the database.
+
+        Returns:
+            A JSON response reporting success and the
+            ID of the deleted movie.
+
+        Raises:
+            404 if the specified movie does not exist.
+            422 if the request cannot be processed
+        '''
         movie = Movie.query.get(id)
 
         if not movie:
@@ -100,10 +152,22 @@ def create_app(test_config=None):
 
     @app.route('/actors', methods=['POST'])
     def post_actor():
+        '''Handles POST requests for actors.
+
+        Accepts a POST request for actors and adds the new
+        record to the database.
+
+        Returns:
+            A JSON response reporting success, a list of all actors
+            as JSON objects, total number of actors & current page.
+
+        Raises:
+            422 if the request cannot be processed
+        '''
         actor_details = request.get_json()
         
         if 'name' not in actor_details or 'age' not in actor_details or 'gender' not in actor_details:
-            abort(404)
+            abort(422)
 
         actor_name = actor_details['name']
         actor_age = actor_details['age']
@@ -127,13 +191,24 @@ def create_app(test_config=None):
             'actors': all_actors
         })
 
-    #TODO Add POST movies endpoint
     @app.route('/movies', methods=['POST'])
     def post_movie():
+        '''Handles POST requests for movies.
+
+        Accepts a POST request for movies and adds the new
+        record to the database.
+
+        Returns:
+            A JSON response reporting success, a list of all movies
+            as JSON objects, total number of movies & current page.
+
+        Raises:
+            422 if the request cannot be processed
+        '''
         movie_details = request.get_json()
         
         if 'title' not in movie_details or 'release_date' not in movie_details:
-            abort(404)
+            abort(422)
 
         movie_title = movie_details['title']
         movie_release_date = movie_details['release_date']
@@ -157,6 +232,19 @@ def create_app(test_config=None):
 
     @app.route('/actors/<int:id>', methods=['PATCH'])
     def patch_actor(id):
+        '''Handles PATCH requests for actors.
+
+        Accepts a PATCH request for a specified actor
+        and updates the record in the database.
+
+        Returns:
+            A JSON response reporting success and the
+            record for the modified record.
+
+        Raises:
+            404 if the specified actor does not exist.
+            422 if the request cannot be processed
+        '''
         edit_actor = Actor.query.get(id)
         if not edit_actor:
             abort(404)
@@ -171,9 +259,10 @@ def create_app(test_config=None):
         if 'gender' in actor_update:
             actor_gender = actor_update['gender']
             edit_actor.gender = actor_gender
-        
-        if not actor_name and not actor_age and not actor_gender:
-            abort(422)
+        if 'name' not in actor_update:
+            if 'age' not in actor_update:
+                if 'gender' not in actor_update:
+                    abort(422)
 
         try:
             edit_actor.update()
@@ -189,6 +278,19 @@ def create_app(test_config=None):
 
     @app.route('/movies/<int:id>', methods=['PATCH'])
     def patch_movie(id):
+        '''Handles PATCH requests for movies.
+
+        Accepts a PATCH request for a specified movie
+        and updates the record in the database.
+
+        Returns:
+            A JSON response reporting success and the
+            record for the modified record.
+
+        Raises:
+            404 if the specified movie does not exist.
+            422 if the request cannot be processed
+        '''
         edit_movie = Movie.query.get(id)
         if not edit_movie:
             abort(404)
@@ -200,9 +302,9 @@ def create_app(test_config=None):
         if 'release_date' in movie_update:
             movie_release_date = movie_update['release_date']
             edit_movie.release_date = movie_release_date
-        
-        if not movie_title and not movie_release_date:
-            abort(422)
+        if 'title' not in movie_update:
+            if 'release_date' not in movie_update:
+                abort(422)
 
         try:
             edit_movie.update()

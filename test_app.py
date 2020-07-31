@@ -43,15 +43,18 @@ class CastingApiTestCase(unittest.TestCase):
         movie_id = new_movie.id
 
     def tearDown(self):
-        '''Executes after each test'''
-        actor_remove = Actor.query.get(actor_id)
-        if actor_remove:
-            actor_remove.delete()
+        '''Executes after each test. Cleans up test data'''
+        remove_actors = Actor.query.all()
+        if remove_actors:
+            for actor in remove_actors:
+                actor.delete()
         
-        movie_remove = Movie.query.get(movie_id)
-        if movie_remove:
-            movie_remove.delete()
+        remove_movies = Movie.query.all()
+        if remove_movies:
+            for movie in remove_movies:
+                movie.delete()
 
+    # Success behaviour tests
     def test_get_actors_success(self):
         '''Test retrieving all actors'''
         response = self.client().get('/actors')
@@ -60,14 +63,6 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['actors'])
-
-    def test_get_actors_not_found(self):
-        '''Test failing getting out of range page for actors'''
-        response = self.client().get('/actors?page=100000')
-        data = json.loads(response.data)
-
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(data['success'], False)
 
     def test_get_movies_success(self):
         '''Test retrieving all movies'''
@@ -78,16 +73,8 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['movies'])
 
-    def test_get_movies_not_found(self):
-        '''Test failing getting out of range page for movies'''
-        response = self.client().get('/movies?page=100000')
-        data = json.loads(response.data)
-
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(data['success'], False)
-
-    def test_add_actor_success(self):
-        '''Test adding new actor'''
+    def test_post_actor_success(self):
+        '''Test successfully adding new actor'''
         payload = {
             'name': 'Bozwil',
             'age': 43,
@@ -103,7 +90,8 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(payload['name'], actor.name)
 
-    def test_add_movie_success(self):
+    def test_post_movie_success(self):
+        '''Test successfully adding a new movie'''
         payload = {
             'title': 'Wilky',
             'release_date': '2012-02-13'
@@ -118,7 +106,8 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(payload['title'], movie.title)
 
-    def test_edit_actor_success(self):
+    def test_patch_actor_success(self):
+        '''Test successfully modifying record for an actor'''
         payload = {
             'name': 'Test_Dubz'
         }
@@ -132,7 +121,8 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(payload['name'], actor.name)
 
-    def test_edit_movie_success(self):
+    def test_patch_movie_success(self):
+        '''Test successfully modifying a movie record'''
         payload = {
             'title': 'Test_Moovz'
         }
@@ -147,6 +137,7 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(payload['title'], movie.title)
     
     def test_delete_actor_success(self):
+        '''Test Successfully removing an actor record'''
         response = self.client().delete(f'/actors/{actor_id}')
         data = json.loads(response.data)
 
@@ -154,15 +145,8 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['delete'], actor_id)
 
-    def test_delete_actor_not_found(self):
-        actor_id = 2000
-        response = self.client().delete(f'/actors/{actor_id}')
-        data = json.loads(response.data)
-
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(data['success'], False)
-
     def test_delete_movie_success(self):
+        '''Test removing a movie records'''
         response = self.client().delete(f'/movies/{movie_id}')
         data = json.loads(response.data)
 
@@ -170,7 +154,34 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['delete'], movie_id)
 
+    # Tests for error behaviors
+    def test_get_actors_not_found(self):
+        '''Test failing getting out of range page for actors'''
+        response = self.client().get('/actors?page=100000')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+
+    def test_get_movies_not_found(self):
+        '''Test failing getting out of range page for movies'''
+        response = self.client().get('/movies?page=100000')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+
+    def test_delete_actor_not_found(self):
+        '''Test removing an actor that doesn't exists'''
+        actor_id = 2000
+        response = self.client().delete(f'/actors/{actor_id}')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+
     def test_delete_movie_not_found(self):
+        '''Test removing a movie that doesn't exist'''
         movie_id = 20000
         response = self.client().delete(f'/movies/{movie_id}')
         data = json.loads(response.data)
@@ -178,7 +189,56 @@ class CastingApiTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
 
-    #TODO Add fail tests for all endpoints
+    def test_post_actor_bad_data(self):
+        '''Test successfully adding new actor'''
+        payload = {
+            'first_name': 'Oops',
+            'age': 43,
+            'gender': 'f'
+        }
+
+        response = self.client().post('/actors', json=payload)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+
+    def test_post_movie_bad_data(self):
+        '''Test successfully adding a new movie'''
+        payload = {
+            'title': 'Wilky',
+            'date': '2012-02-13'
+        }
+
+        response = self.client().post('/movies', json=payload)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+
+    def test_patch_actor_bad_payload(self):
+        '''Test successfully modifying record for an actor'''
+        payload = {
+            'first_name': 'Test_Dubz'
+        }
+        
+        response = self.client().patch(f'/actors/{actor_id}', json=payload)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+
+    def test_patch_movie_bad_payload(self):
+        '''Test successfully modifying a movie record'''
+        payload = {
+            'name': 'Test_Moovz'
+        }
+
+        response = self.client().patch(f'/movies/{movie_id}', json=payload)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
 
     #TODO Add auth tests
 
