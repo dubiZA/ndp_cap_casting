@@ -28,6 +28,7 @@ def create_app(test_config=None):
     setup_db(app)
 
     @app.route('/actors')
+    @requires_auth(permission='get:actors')
     def get_actors():
         '''Handles GET requests for actors.
 
@@ -377,13 +378,13 @@ def create_app(test_config=None):
         }), 422
 
 
-    # @app.errorhandler(AuthError)
-    # def auth_error(exception):
-    #     return jsonify({
-    #         'success': False,
-    #         'error': exception.status_code,
-    #         'message': exception.error
-    #     }), exception.status_code
+    @app.errorhandler(AuthError)
+    def auth_error(exception):
+        return jsonify({
+            'success': False,
+            'error': exception.status_code,
+            'message': exception.error
+        }), exception.status_code
 
     
     return app
