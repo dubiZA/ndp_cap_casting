@@ -7,6 +7,7 @@ from auth import AuthError, requires_auth
 
 ITEMS_PER_PAGE = 5
 
+
 def paginate(request, selection):
     page = request.args.get('page', 1, type=int)
     start = (page - 1) * ITEMS_PER_PAGE
@@ -20,6 +21,7 @@ def paginate(request, selection):
         'total_items': len(all_items),
         'current_items': current_items
     }
+
 
 def create_app(test_config=None):
     # Create and configure the app
@@ -36,7 +38,7 @@ def create_app(test_config=None):
         from the database.
 
         Returns:
-            A JSON response reporting success, a list of actors as 
+            A JSON response reporting success, a list of actors as
             JSON objects, total number of actors and current page.
 
         Raises:
@@ -47,7 +49,7 @@ def create_app(test_config=None):
             actors = Actor.query.order_by(Actor.id).all()
         except:
             abort(422)
-        
+
         current_actors = paginate(request, actors)
 
         if len(current_actors['current_items']) == 0:
@@ -69,7 +71,7 @@ def create_app(test_config=None):
         from the database.
 
         Returns:
-            A JSON response reporting success, a list of movies as 
+            A JSON response reporting success, a list of movies as
             JSON objects, total number of movies and current page.
 
         Raises:
@@ -113,14 +115,11 @@ def create_app(test_config=None):
 
         if not actor:
             abort(404)
-        
+
         try:
             actor.delete()
 
-            return jsonify({
-                'success': True,
-                'delete': id
-            })
+            return jsonify({'success': True, 'delete': id})
         except:
             abort(422)
 
@@ -144,14 +143,11 @@ def create_app(test_config=None):
 
         if not movie:
             abort(404)
-        
+
         try:
             movie.delete()
 
-            return jsonify({
-                'success': True,
-                'delete': id
-            })
+            return jsonify({'success': True, 'delete': id})
         except:
             abort(422)
 
@@ -171,8 +167,10 @@ def create_app(test_config=None):
             422 if the request cannot be processed
         '''
         actor_details = request.get_json()
-        
-        if 'name' not in actor_details or 'age' not in actor_details or 'gender' not in actor_details:
+
+        if ('name' not in actor_details or
+            'age' not in actor_details or
+            'gender' not in actor_details):
             abort(422)
 
         actor_name = actor_details['name']
@@ -180,22 +178,17 @@ def create_app(test_config=None):
         actor_gender = actor_details['gender']
 
         try:
-            new_actor = Actor(
-                name=actor_name,
-                age=actor_age,
-                gender=actor_gender
-            )
+            new_actor = Actor(name=actor_name,
+                              age=actor_age,
+                              gender=actor_gender)
             new_actor.insert()
 
             all_actors = Actor.query.all()
             all_actors = [actor.format() for actor in all_actors]
         except:
             abort(422)
-        
-        return jsonify({
-            'success': True,
-            'actors': all_actors
-        })
+
+        return jsonify({'success': True, 'actors': all_actors})
 
     @app.route('/movies', methods=['POST'])
     @requires_auth(permission='post:movies')
@@ -213,7 +206,7 @@ def create_app(test_config=None):
             422 if the request cannot be processed
         '''
         movie_details = request.get_json()
-        
+
         if 'title' not in movie_details or 'release_date' not in movie_details:
             abort(422)
 
@@ -221,21 +214,16 @@ def create_app(test_config=None):
         movie_release_date = movie_details['release_date']
 
         try:
-            new_movie = Movie(
-                title=movie_title,
-                release_date=movie_release_date
-            )
+            new_movie = Movie(title=movie_title,
+                              release_date=movie_release_date)
             new_movie.insert()
 
             all_movies = Movie.query.all()
             all_movies = [movie.format() for movie in all_movies]
         except:
             abort(422)
-        
-        return jsonify({
-            'success': True,
-            'movies': all_movies
-        })
+
+        return jsonify({'success': True, 'movies': all_movies})
 
     @app.route('/actors/<int:id>', methods=['PATCH'])
     @requires_auth(permission='patch:actors')
@@ -277,10 +265,7 @@ def create_app(test_config=None):
             actor = Actor.query.get(id)
             actor = actor.format()
 
-            return jsonify({
-                'success': True,
-                'actors': actor
-            })
+            return jsonify({'success': True, 'actors': actor})
         except:
             abort(422)
 
@@ -320,13 +305,9 @@ def create_app(test_config=None):
             movie = Movie.query.get(id)
             movie = movie.format()
 
-            return jsonify({
-                'success': True,
-                'movies': movie
-            })
+            return jsonify({'success': True, 'movies': movie})
         except:
             abort(422)
-
 
     # Error handling
     @app.errorhandler(400)
@@ -337,7 +318,6 @@ def create_app(test_config=None):
             'message': 'bad request'
         }), 400
 
-
     @app.errorhandler(401)
     def unauthorized(error):
         return jsonify({
@@ -345,7 +325,6 @@ def create_app(test_config=None):
             'error': 401,
             'message': 'unauthorized'
         }), 401
-
 
     @app.errorhandler(403)
     def forbidden(error):
@@ -355,7 +334,6 @@ def create_app(test_config=None):
             'message': 'forbidden'
         }), 403
 
-
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
@@ -363,7 +341,6 @@ def create_app(test_config=None):
             'error': 404,
             'message': 'not found'
         }), 404
-
 
     @app.errorhandler(405)
     def not_allowed(error):
@@ -373,7 +350,6 @@ def create_app(test_config=None):
             'message': 'method not allowed'
         }), 405
 
-
     @app.errorhandler(422)
     def unprocessable(error):
         return jsonify({
@@ -381,7 +357,6 @@ def create_app(test_config=None):
             'error': 422,
             'message': 'unprocessable'
         }), 422
-
 
     @app.errorhandler(AuthError)
     def auth_error(exception):
@@ -391,8 +366,8 @@ def create_app(test_config=None):
             'message': exception.error
         }), exception.status_code
 
-    
     return app
+
 
 app = create_app()
 
