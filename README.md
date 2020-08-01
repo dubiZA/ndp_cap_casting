@@ -63,6 +63,21 @@ The JSON error response will have the following structure:
 What follows is the API endpoint reference. The URL pattern would be \[base_url\]/endpoint, for example:
 <http://localhost:5000/actors>
 
+The endpoints each require authentication and authorization to interact with. There are three roles designed to work with the API
+1. Casting Assistant
+    1. Can get actors and movies
+2. Casting Director
+    1. Same as Casting Assistant
+    2. Can POST a new actor
+    3. Can DELETE an actor
+    4. Can PATCH actors or movies
+3. Casting Producer
+    1. Same as Casting Director
+    2. Can POST a new movie
+    3. Can DELETE a movie
+    
+A JWT with the requisite permissions is required to interact with each endpoint in the application.
+
 ### GET /actors
 
 Handles requests for actors. When a request is submitted to this endpoint, all actors in the database will be sent to the user in a JSON response.
