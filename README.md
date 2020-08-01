@@ -27,7 +27,7 @@ export DATABASE_URL="postres://<host_name>:<port>/<database_name>
 # Run the app
 flask run
 ```
-NOTE: This API requires authentication, but does not provide a mechanism to sign up for an account. You will need to update the auth0 details in auth.py to provide your own tokens to the API.
+NOTE: This API requires authentication, but does not provide a mechanism to sign up for an account. You will need to use the tokens provided. See Authentication and Authorization Details section below.
 
 # API Reference
 
