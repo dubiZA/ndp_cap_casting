@@ -1,12 +1,13 @@
 # Casting Agency API - Udacity Fullstack Nanodegree Project
 
-The Casting Agency API provides the Casting Agency Assistants, Directors and Produces to update the database of movies and actors in the pipeline. 
+The Casting Agency API provides the Casting Agency Assistants, Directors and Produces to update the database of movies and actors in the pipeline.
+A live instance of this API is hosted on Heroku at: https://ndp-casting-agency.herokuapp.com/. See the API reference for a guide to the API endpoints to use with this base URL.
 
 ## Style Guide
 
 The Trivia API backend is written with PEP 8 as the style guide. Google's yapf formatter was used to format the code. For consistency, feel free to format using it. It can be installed with `pip install yapf` or view the [GitHub repo](https://github.com/google/yapf). Note: some manual editting may be required.
 
-## Getting Started
+## Quick Start for Local Development
 
 To jump in right away, follow the sections below. For more detailed instructions, view the readme files for the frontend and backend here:
 
@@ -34,7 +35,8 @@ The Casting Agency API application is powered by a Python Flask RESTful API on t
 
 ## Getting Started
 
-The base URL for the API backend is http://localhost:8080
+The base URL for the API backend when using locally is http://localhost:8080/
+
 To use the deployed Heroku app, use https://ndp-casting-agency.herokuapp.com/
 
 ## Errors
