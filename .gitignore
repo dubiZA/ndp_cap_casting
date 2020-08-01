@@ -130,5 +130,4 @@ dmypy.json
 
 # My stuff
 .vscode
-setup.sh
 yapf_style.conf
