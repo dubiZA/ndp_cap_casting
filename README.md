@@ -13,12 +13,15 @@ To jump in right away, follow the sections below. For more detailed instructions
 To set up the backend server:
 
 ```bash
+# Create the database (Casting Agency API uses postgresql)
+createdb <database_name>
+
 # Install requirements in a virtual environment
 pip install -r requirements.txt
 
 # Set postgresql database URL as environment variable
 # NOTE: Use set on Windows
-export DATABASE_URL="postres://host_name:port/database_name
+export DATABASE_URL="postres://<host_name>:<port>/<database_name>
 
 # Run the app
 flask run
@@ -62,280 +65,228 @@ What follows is the API endpoint reference. The URL pattern would be \[base_url\
 
 ### GET /actors
 
-Handles requests for categories. When a request is submitted to this endpoint, all categories in the database will be sent to the user in a JSON response.
+Handles requests for actors. When a request is submitted to this endpoint, all actors in the database will be sent to the user in a JSON response.
 
-Sample request: `curl http://localhost:5000/api/v1/categories`
+Sample request: `curl -H 'Authorization: Bearer <jwt_token>' http://localhost:8080/actors`
 
 The JSON response is an object with keys and values:
 + success: True (boolean)
-+ categories: (JSON object)
-    + category_id: category_name (string)
++ actors: (list)
+    + name: actor name (string)
+    + age: actor age (int)
+    + gender: actor gender (string)
++ total_actors: number of actors (int)
++ current_page: current page (int)
 
 ```javascript
 {
     'success': True,
-    'categories': {
-        '1': 'Science',
-        '2': 'History',
-        '3': 'etc'
-    }
-}
-```
-
-
-### GET /api/v1/questions
-
-Handles requests for questions. When a request is submitted to this endpoint, all questions in the database will be sent to the user in a JSON response with additional data that may be useful to the requesting client. This endpoint returns a paginated response with a hardcoded page size of 10 items per page.
-
-Sample request: `curl http://localhost:5000/api/v1/questions`
-
-The JSON response is an object with the keys and value data types:
-+ success: (boolean)
-+ questions: (array of JSON objects)
-    + id: (int)
-    + question: (string)
-    + answer: (string)
-    + category: (string)
-    + difficulty: (int)
-+ categories: (JSON object)
-    + category_id: category_name (string)
-+ current_category: None
-+ total_questions: (int)
-+ current_page: (int)
-
-```javascript
-{
-    'success': True,
-    'questions': [
+    'actors': [
         {
-            'id': 1,
-            'questions': 'Foo',
-            'answer': 'Bar',
-            'category' 'Baz',
-            'Difficulty': 1
-        },
-        {
-            'id': 2,
-            'questions': 'Baz',
-            'answer': 'Bar',
-            'category' 'Foo',
-            'Difficulty': 4
-        }
+            name: 'John Goodman',
+            age: 68,
+            gender: 'm'
+         },
+         {
+            name: 'Jessica Biel',
+            age: 38,
+            gender: 'f'
+         }
     ],
-    'categories': {
-        '1': 'Science',
-        '2': 'History',
-        '3': 'etc'
-    },
-    'current_category': None,
-    'total_questions': 2,
+    'total_actors': 2,
     'current_page': 1
 }
 ```
 
-### DELETE /api/v1/questions/[question_id]
 
-Handles delete requests for a specific question in the questions collection. When a request is submitted to this endpoint, the question is looked up in the database and deleted from. A JSON response is sent to the user to confirm the delete action with additional data that may be useful to the requesting client, like all the questions remaining in the database, count of all questions remaining and the current page number. This endpoint takes an integer as the final part of the URL.
+### GET /movies
 
-Sample request: `curl -X DELETE http://localhost:5000/api/v1/questions/1`
+Handles requests for movies. When a request is submitted to this endpoint, all movies in the database will be sent to the user in a JSON response.
+
+Sample request: `curl -H 'Authorization: Bearer <jwt_token>' http://localhost:8080/movies`
+
+The JSON response is an object with keys and values:
++ success: True (boolean)
++ movies: (list)
+    + title: movie title (string)
+    + release_date: release data (date)
++ total_movies: number of movies (int)
++ current_page: current page (int)
+
+```javascript
+{
+    'success': True,
+    'movies': [
+        {
+            name: 'Surfs Up',
+            release_date: 2007-06-08
+         },
+         {
+            name: 'Surfs Up 2: Wave Mania',
+            release_date: 2017-01-17
+         }
+    ],
+    'total_movies': 2,
+    'current_page': 1
+}
+```
+
+### DELETE /actors/[actor_id]
+
+Handles delete requests for a specific actor. When a request is submitted to this endpoint, the actor is looked up in the database and deleted. A JSON response is sent to the user to confirm the delete action. This endpoint takes an integer as the final part of the URL.
+
+Sample request: `curl -H 'Authorization: Bearer <jwt_token>' -X DELETE http://localhost:8080/actors/1`
 
 The JSON response is an object with the keys and value data types:
 + success: (boolean)
 + deleted: (int)
-+ questions: (array of JSON objects)
-    + id: (int)
-    + question: (string)
-    + answer: (string)
-    + category: (string)
-    + difficulty: (int)
-+ total_questions: (int)
-+ current_page: (int)
 
 ```javascript
 {
     'success': True,
-    'deleted': 1
-    'questions': [
-        {
-            'id': 2,
-            'questions': 'Baz',
-            'answer': 'Bar',
-            'category' 'Foo',
-            'Difficulty': 1
-        }
-    ],
-    'total_questions': 1,
-    'current_page': 1
+    'delete': 1
 }
 ```
-If the question cannot be deleted an error is returned. If they question does not exist in the database a 404 is returned.
 
-### POST /api/v1/questions
+### DELETE /movies/[movie_id]
 
-Handles POST requests for either:
-+ Creating a new question in the database
-+ Searching for an existing question by question text with partial matches supported
+Handles delete requests for a specific movie. When a request is submitted to this endpoint, the movie is looked up in the database and deleted. A JSON response is sent to the user to confirm the delete action. This endpoint takes an integer as the final part of the URL.
 
-#### Creating a new question
-
-When a search term is not found in the POST request, the endpoint will take a POST request for a new question. The payload should have the following keys and value data types:
-+ question: (string)
-+ answer: (string)
-+ category: (int)
-+ difficulty: (int)
-
-Sample request: `curl -X POST -H 'Content-Type: application/json' -d '{"question": "Foo", "answer": "Bar", "category": "1", "difficulty": "2"}' http://localhost:5000/api/v1/questions/`
+Sample request: `curl -H 'Authorization: Bearer <jwt_token>' -X DELETE http://localhost:8080/movies/1`
 
 The JSON response is an object with the keys and value data types:
 + success: (boolean)
-+ questions: (array of JSON objects)
-    + id: (int)
-    + question: (string)
-    + answer: (string)
-    + category: (string)
-    + difficulty: (int)
-+ total_questions: (int)
-+ current_page: (int)
++ deleted: (int)
 
 ```javascript
 {
     'success': True,
-    'questions': [
+    'delete': 1
+}
+```
+
+### POST /actors
+
+Handles post requests for actors. When a request is submitted to this endpoint, a new actor is added to the database. A JSON response is sent to the user to confirm the addition.
+
+Sample request: `curl -X POST -H 'Content-Type: application/json' -H 'Authorization: Bearer <jwt_token>' -d '{"name": "Foo", "age": 32, "gender": "m"}' http://localhost:8080/actors`
+
+The JSON response is an object with the keys and value data types:
++ success: True (boolean)
++ actors: (list)
+    + name: actor name (string)
+    + age: actor age (int)
+    + gender: actor gender (string)
++ total_actors: number of actors (int)
++ current_page: current page (int)
+
+```javascript
+{
+    'success': True,
+    'actors': [
         {
-            'id': 2,
-            'questions': 'Baz',
-            'answer': 'Bar',
-            'category' 'Foo',
-            'Difficulty': 1
-        },
-        {
-            'id': 3,
-            'questions': 'Foo',
-            'answer': 'Bar',
-            'category' 'Baz',
-            'Difficulty': 2
-        }
+            name: 'John Goodman',
+            age: 68,
+            gender: 'm'
+         },
+         {
+            name: 'Jessica Biel',
+            age: 38,
+            gender: 'f'
+         },
+         {
+            name: 'Foo',
+            age: 32,
+            gender: 'm'
+         }
     ],
-    'total_questions': 2,
+    'total_actors': 3,
     'current_page': 1
 }
 ```
-If the question cannot be added an error is returned.
 
-#### Searching for a question
+### POST /movies
 
-When a search term is found in the POST request, the endpoint will request any questions matching the submitted string from the database. The search term is not case sensitive. The payload should have the following key and value data type:
-+ searchTerm: (string)
+Handles post requests for movies. When a request is submitted to this endpoint, a new movie is added to the database. A JSON response is sent to the user to confirm the addition.
 
-Sample request: `curl -X POST -H 'Content-Type: application/json' -d '{"searchTerm": "foo"}' http://localhost:5000/api/v1/questions/`
+Sample request: `curl -X POST -H 'Content-Type: application/json' -H 'Authorization: Bearer <jwt_token>' -d '{"title": "Bar", "release_date": "2012-12-12"}' http://localhost:8080/movies`
 
 The JSON response is an object with the keys and value data types:
-+ success: (boolean)
-+ questions: (array of JSON objects)
-    + id: (int)
-    + question: (string)
-    + answer: (string)
-    + category: (string)
-    + difficulty: (int)
-+ total_questions: (int)
-+ current_page: (int)
++ success: True (boolean)
++ movies: (list)
+    + title: movie title (string)
+    + release_date: release data (date)
++ total_movies: number of movies (int)
++ current_page: current page (int)
 
 ```javascript
 {
     'success': True,
-    'questions': [
+    'movies': [
         {
-            'id': 3,
-            'questions': 'Foo',
-            'answer': 'Bar',
-            'category' 'Baz',
-            'Difficulty': 2
-        }
+            name: 'Surf's Up',
+            release_date: 2007-06-08
+         },
+         {
+            name: 'Surf's Up 2: Wave Mania',
+            release_date: 2017-01-17
+         },
+         {
+            title: 'Bar',
+            release_date: '2012-12-12'
+         }
     ],
-    'total_questions': 2,
+    'total_movies': 3,
     'current_page': 1
 }
 ```
-If the search term cannot be found an error is returned.
 
-### GET /api/v1/categories/[category_id]/questions
+### PATCH /actors/[actor_id]
 
-Handles GET requests for a specific category and all related questions in the collection. When a request is submitted to this endpoint, the category is looked up in the database and only questions with a matching category ID are returned. A JSON response is sent to the user with the questions for the specified category as well as a count of all questions remaining and the current page number.
+Handles patch requests for actors. When a request is submitted to this endpoint, the specified actor is modified in the database. A JSON response is sent to the user to confirm the modification.
 
-Sample request: `curl http://localhost:5000/api/v1/categories/3/questions`
+Sample request: `curl -X PATCH -H 'Content-Type: application/json' -H 'Authorization: Bearer <jwt_token>' -d '{"name": "Baz"}' http://localhost:8080/actors/3`
 
 The JSON response is an object with the keys and value data types:
-+ success: (boolean)
-+ questions: (array of JSON objects)
-    + id: (int)
-    + question: (string)
-    + answer: (string)
-    + category: (string)
-    + difficulty: (int)
-+ categories: (JSON object)
-    + category_id: category_name (string)
-+ current_category: (string)
-+ total_questions: (int)
-+ current_page: (int)
++ success: True (boolean)
++ actors: (list)
+    + name: actor name (string)
+    + age: actor age (int)
+    + gender: actor gender (string)
 
 ```javascript
 {
     'success': True,
-    'questions': [
-        {
-            'id': 1,
-            'questions': 'Foo',
-            'answer': 'Bar',
-            'category' 'Baz',
-            'Difficulty': 1
-        },
-        {
-            'id': 2,
-            'questions': 'Baz',
-            'answer': 'Bar',
-            'category' 'Baz',
-            'Difficulty': 4
-        }
-    ],
-    'categories': {
-        '1': 'Science',
-        '2': 'History',
-        '3': 'Baz'
-    },
-    'current_category': 'Baz',
-    'total_questions': 2,
-    'current_page': 1
+    'actors': [
+         {
+            name: 'Baz',
+            age: 32,
+            gender: 'm'
+         }
+    ]
 }
 ```
-If the category or questions cannot be found in the database a 404 is returned.
 
-### POST /api/v1/quizzes
+### PATCH /movies/[movie_id]
 
-Handles GET requests for the quiz game. When a request is submitted to this endpoint, the category is looked up in the database and only questions with a matching category are returned. A JSON response is sent to the user with a randomly chosen question for the specified category as well as a count of all questions remaining in the question set. The endpoint also take a list of previously asked questions and excludes them from the question pool with each subsequent request to the endpoint.
+Handles patch requests for movies. When a request is submitted to this endpoint, the specified movie is modified in the database. A JSON response is sent to the user to confirm the modification.
 
-Sample request: `curl -X POST -H 'Content-Type: application/json' -d '{"quiz_category": "Foo", "previous_questions": "[]"}' http://localhost:5000/api/v1/quizzes/`
+Sample request: `curl -X PATCH -H 'Content-Type: application/json' -H 'Authorization: Bearer <jwt_token>' -d '{"title": "Foobar"}' http://localhost:8080/movies/3`
 
 The JSON response is an object with the keys and value data types:
-+ success: (boolean)
-+ question: (JSON objects)
-    + id: (int)
-    + question: (string)
-    + answer: (string)
-    + category: (string)
-    + difficulty: (int)
-+ remaining_questions: (int)
++ success: True (boolean)
++ movies: (list)
+    + title: movie title (string)
+    + release_date: release data (date)
 
 ```javascript
 {
     'success': True,
-    'question': {
-        'id': 1,
-        'questions': 'Foo',
-        'answer': 'Bar',
-        'category' 'Baz',
-        'Difficulty': 1
-    },
-    'remaining_questions': 2
+    'movies': [
+         {
+            title: 'Foobar',
+            release_date: '2012-12-12'
+         }
+    ]
 }
 ```
-If there are no question for the selected category, a 404 is returned.
