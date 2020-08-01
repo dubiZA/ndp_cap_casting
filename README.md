@@ -40,7 +40,7 @@ The base URL for the API backend when using locally is http://localhost:8080/
 To use the deployed Heroku app, use https://ndp-casting-agency.herokuapp.com/
 
 ## Authentication and Authorization Details
-Valid JWTs are included in the setup.sh file in this repo. Tokens have a maximum validity of 24 hours and these tokens in the setup.sh file are as close to that as possible. *NOTE for Udacity Graders: Please use the tokens in the setup.sh file with the sample curl commands in each endpoint reference. Make sure to substitute the necessary parameters in the curl commands for the heroku URL, client_token, etc.*
+Valid JWTs are included in the setup.sh file in this repo. Tokens have a maximum validity of 24 hours and these tokens in the setup.sh file are as close to that as possible. **NOTE: for Udacity Graders: Please use the tokens in the setup.sh file with the sample curl commands in each endpoint reference. Make sure to substitute the necessary parameters in the curl commands for the heroku URL, client_token, etc.**
 
 The endpoints each require authentication and authorization to interact with. There are three roles designed to work with the API
 1. Casting Assistant
