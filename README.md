@@ -39,6 +39,24 @@ The base URL for the API backend when using locally is http://localhost:8080/
 
 To use the deployed Heroku app, use https://ndp-casting-agency.herokuapp.com/
 
+## Authentication and Authorization Details
+Valid JWTs are included in the setup.sh file in this repo. Tokens have a maximum validity of 24 hours and these tokens in the setup.sh file are as close to that as possible. *NOTE for Udacity Graders: Please use the tokens in the setup.sh file with the sample curl commands in each endpoint reference. Make sure to substitute the necessary parameters in the curl commands for the heroku URL, client_token, etc.*
+
+The endpoints each require authentication and authorization to interact with. There are three roles designed to work with the API
+1. Casting Assistant
+    1. Can get actors and movies
+2. Casting Director
+    1. Same as Casting Assistant
+    2. Can POST a new actor
+    3. Can DELETE an actor
+    4. Can PATCH actors or movies
+3. Casting Producer
+    1. Same as Casting Director
+    2. Can POST a new movie
+    3. Can DELETE a movie
+    
+A JWT with the requisite permissions is required to interact with each endpoint in the application.
+
 ## Errors
 
 Clients should expect to recieve one of several types of HTTP error response codes if something goes wrong or a request is not correctly submitted. Error response messages are returned as JSON. Response codes include:
@@ -64,21 +82,6 @@ The JSON error response will have the following structure:
 
 What follows is the API endpoint reference. The URL pattern would be \[base_url\]/endpoint, for example:
 <http://localhost:5000/actors>
-
-The endpoints each require authentication and authorization to interact with. There are three roles designed to work with the API
-1. Casting Assistant
-    1. Can get actors and movies
-2. Casting Director
-    1. Same as Casting Assistant
-    2. Can POST a new actor
-    3. Can DELETE an actor
-    4. Can PATCH actors or movies
-3. Casting Producer
-    1. Same as Casting Director
-    2. Can POST a new movie
-    3. Can DELETE a movie
-    
-A JWT with the requisite permissions is required to interact with each endpoint in the application.
 
 ### GET /actors
 
