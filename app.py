@@ -30,8 +30,7 @@ def create_app(test_config=None):
     setup_db(app)
 
     @app.route('/actors')
-    @requires_auth(permission='get:actors')
-    def get_actors(jwt):
+    def get_actors():
         '''Handles GET requests for actors.
 
         Accepts a request for actors and retrieves all actors
@@ -63,8 +62,7 @@ def create_app(test_config=None):
         })
 
     @app.route('/movies')
-    @requires_auth(permission='get:movies')
-    def get_movies(jwt):
+    def get_movies():
         '''Handles GET requests for movies.
 
         Accepts a request for movies and retrieves all movies
